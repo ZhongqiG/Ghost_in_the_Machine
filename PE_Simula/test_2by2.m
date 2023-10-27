@@ -55,7 +55,7 @@ for iteration = 1:num_of_training_iterations
 
 end
 
- PE Array
+% PE Array
 % This function has to come first according to Matlab convention
 % All other functions in this file are used in this main array function
 
@@ -184,6 +184,8 @@ function output = act_pe(net_in, model, alpha)
         end
     end
 end
+
+function 
 
 
 

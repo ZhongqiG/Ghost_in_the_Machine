@@ -55,7 +55,7 @@ for iteration = 1:num_of_training_iterations
 
 end
 
- PE Array
+% PE Array
 % This function has to come first according to Matlab convention
 % All other functions in this file are used in this main array function
 
@@ -85,17 +85,18 @@ function [output_k, delta_kmin1, weight_changes, bias_changes] = pe_array(weight
 
     sum_delta_out11 = 0;
     sum_output_out11 = 0;
+    sum_delta_out12 = 0;
     sum_delta_out21 = 0;
     sum_output_out21 = 0;
     net_sum1 = 0;
     net_sum2 = 0;
-    
+    sum_delta_out22 = 0;
     
     % first weight PE, first neuron
-    [sum_delta_out11, sum_output_out11, weight_changes(1, 1)] = weights_pe(delta_k(1), output_kmin1(1), init_bias1, 0, init_weight11, eta);
+    [sum_delta_out11, sum_output_out11, weight_changes(1, 1)] = weights_pe(delta_k(1), output_kmin1(1), [init_bias1], [0], init_weight11, eta);
     
     % second weight PE, first neuron
-    [sum_delta_out12, net_sum1, weight_changes(1, 2)] = weights_pe(delta_k(1), output_kmin1(2), sum_output_out11, 0, init_weight12, eta);
+    [sum_delta_out12, net_sum1, weight_changes(1, 2)] = weights_pe(delta_k(1), output_kmin1(2), sum_output_out11, [0], init_weight12, eta);
     
     % output of the first neuron
     output_k(1) = act_pe(net_sum1, model, alpha);
@@ -103,7 +104,7 @@ function [output_k, delta_kmin1, weight_changes, bias_changes] = pe_array(weight
     %----------------------------------------------------------------------
     
     % first weight PE, second neuron
-    [sum_delta_out21, sum_output_out21, weight_changes(2, 1)] = weights_pe(delta_k(2), output_kmin1(1), init_bias2, sum_delta_out11, init_weight21, eta);
+    [sum_delta_out21, sum_output_out21, weight_changes(2, 1)] = weights_pe(delta_k(2), output_kmin1(1), [init_bias2], sum_delta_out11, init_weight21, eta);
     
     % second weight PE, second neuron
     [sum_delta_out22, net_sum2, weight_changes(2, 2)] = weights_pe(delta_k(2), output_kmin1(2), sum_output_out21, sum_delta_out12, init_weight22, eta);
