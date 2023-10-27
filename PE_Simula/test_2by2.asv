@@ -1,4 +1,61 @@
-% PE Array
+% This code utilizes the 2x2 array to perform test calculations
+% This code implements training for the XOR problem
+
+% Setting Up the Data
+
+% Initial Weights and Biases
+weights1 = [1 1 
+           1 1];
+weights2 = [1 1 
+           1 1];
+biases1 = [1 1];
+biases2 = [1 1];
+
+% Setup the Initial Input Data
+% Setup the True Output Vector
+input_data = [1 1 1 1 1 1 1 1 1 1]; %10 clock cycles right now, 1 is placeholder
+true_output = [1 1 1 1 1 1 1 1 1 1];
+
+% Set the Constants and Activation Function
+eta = 0.1; %need to replace with a standard value for eta
+alpha = 0.1; %need to replace with a standard value for alpha
+model = "elu";
+
+% Create Arrays to Hold the Outputs
+output_1 = zeros(2, 1); %this array should be as long as there are neurons in the layer
+output_2 = zeros(2, 1); %this array should be as long as there are neurons in the layer
+delta_1 = zeros(2, 1); %I think this should be as long as there are weights in a neuron
+delta_2 = zeros(2, 1); %I think this should be as long as there are weights in a neuron
+delta_dummy = zeros(2, 1); %I think this should be as long as there are weights in a neuron
+weight_changes1 = zeros(2, 2); %should be as large as the PE array
+weight_changes2 = zeros(2, 2); %should be as large as the PE array
+bias_changes1 = zeros(2, 1); %should be as large as the number of neurons in the layer
+bias_changes2 = zeros(2, 1); %should be as large as the number of neurons in the layer
+
+% Train the model
+% Create a model with 2 layers of 2 neurons each
+
+num_of_training_iterations = 100; %set this to the desired value
+
+for iteration = 1:num_of_training_iterations
+
+    % Run the model
+    [output_1, delta_dummy, weight_changes1, bias_changes1] = pe_array(weights1, biases1, input_data, delta_1, eta, model, alpha);
+    [actual_output, delta_1, weight_changes2, bias_changes2] = pe_array(weights2, biases2, output_1, delta_2, eta, model, alpha);
+
+    % Update the weights and biases for the next pass
+    weights1 = weightchanges1;
+    weights2 = weight_changes2;
+    biases1 = bias_changes1;
+    biases2 = bias_changes2;
+
+    % Compare the output with the expected output to determine the error
+    % for backpropagation
+    delta_2 = true_output - actual_output;
+
+end
+
+ PE Array
 % This function has to come first according to Matlab convention
 % All other functions in this file are used in this main array function
 
@@ -28,12 +85,11 @@ function [output_k, delta_kmin1, weight_changes, bias_changes] = pe_array(weight
 
     sum_delta_out11 = 0;
     sum_output_out11 = 0;
-    sum_delta_out12 = 0;
     sum_delta_out21 = 0;
     sum_output_out21 = 0;
     net_sum1 = 0;
     net_sum2 = 0;
-    sum_delta_out22 = 0;
+    
     
     % first weight PE, first neuron
     [sum_delta_out11, sum_output_out11, weight_changes(1, 1)] = weights_pe(delta_k(1), output_kmin1(1), init_bias1, 0, init_weight11, eta);
@@ -127,3 +183,12 @@ function output = act_pe(net_in, model, alpha)
         end
     end
 end
+
+
+
+
+
+
+
+
+

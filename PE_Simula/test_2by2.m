@@ -1,16 +1,20 @@
 % This code utilizes the 2x2 array to perform test calculations
+% This code implements training for the XOR problem
 
-%% Setting Up the Data
+% Setting Up the Data
 
-% Initial Weights
-weights = [1 1 
+% Initial Weights and Biases
+weights1 = [1 1 
            1 1];
-biases = [1 1];
+weights2 = [1 1 
+           1 1];
+biases1 = [1 1];
+biases2 = [1 1];
 
-% Retrieve the Output from the Previous Layer
-% Retrieve Error from Current Layer
-output_kmin1 = [1 1 1 1 1 1 1 1 1 1]; %10 clock cycles right now, 1 is placeholder
-delta_k = [1 1 1 1 1 1 1 1 1 1];
+% Setup the Initial Input Data
+% Setup the True Output Vector
+input_data = [1 1 1 1 1 1 1 1 1 1]; %10 clock cycles right now, 1 is placeholder
+true_output = [1 1 1 1 1 1 1 1 1 1];
 
 % Set the Constants and Activation Function
 eta = 0.1; %need to replace with a standard value for eta
@@ -18,13 +22,170 @@ alpha = 0.1; %need to replace with a standard value for alpha
 model = "elu";
 
 % Create Arrays to Hold the Outputs
-output_k = zeros(2, 1); %this array should be as long as there are neurons in the layer
-delta_kmin1 = zeros(2, 1); %I think this should be as long as there are weights in a neuron
-weight_changes = zeros(2, 2); %should be as large as the PE array
-bias_changes = zeros(2, 1); %should be as large as the number of neurons in the layer
+output_1 = zeros(2, 1); %this array should be as long as there are neurons in the layer
+output_2 = zeros(2, 1); %this array should be as long as there are neurons in the layer
+delta_1 = zeros(2, 1); %I think this should be as long as there are weights in a neuron
+delta_2 = zeros(2, 1); %I think this should be as long as there are weights in a neuron
+delta_dummy = zeros(2, 1); %I think this should be as long as there are weights in a neuron
+weight_changes1 = zeros(2, 2); %should be as large as the PE array
+weight_changes2 = zeros(2, 2); %should be as large as the PE array
+bias_changes1 = zeros(2, 1); %should be as large as the number of neurons in the layer
+bias_changes2 = zeros(2, 1); %should be as large as the number of neurons in the layer
 
-%% Using the PE for 1 Layer
-output_k, delta_kmin1, weight_changes, bias_changes = pe_array(weights, biases, output_kmin1, delta_k, eta, model, alpha);
+% Train the model
+% Create a model with 2 layers of 2 neurons each
+
+num_of_training_iterations = 100; %set this to the desired value
+
+for iteration = 1:num_of_training_iterations
+
+    % Run the model
+    [output_1, delta_dummy, weight_changes1, bias_changes1] = pe_array(weights1, biases1, input_data, delta_1, eta, model, alpha);
+    [actual_output, delta_1, weight_changes2, bias_changes2] = pe_array(weights2, biases2, output_1, delta_2, eta, model, alpha);
+
+    % Update the weights and biases for the next pass
+    weights1 = weightchanges1;
+    weights2 = weight_changes2;
+    biases1 = bias_changes1;
+    biases2 = bias_changes2;
+
+    % Compare the output with the expected output to determine the error
+    % for backpropagation
+    delta_2 = true_output - actual_output;
+
+end
+
+ PE Array
+% This function has to come first according to Matlab convention
+% All other functions in this file are used in this main array function
+
+function [output_k, delta_kmin1, weight_changes, bias_changes] = pe_array(weights, biases, output_kmin1, delta_k, eta, model, alpha)
+    % inputs: 
+    % weights - array representing all the weights for the 2x2 array
+    % output_kmin1 - previous layer output array for each neuron
+    % partial_sum_delta_k - partial delta sum for current layer from
+    % previous neuron in the same layer
+    % delta_k - propagate delta for current layer, current neuron
+    % partial_sum_out_k = partial sum output for current layer, same neuron
+    
+    % define the initial weights
+    init_weight11 = weights(1, 1);
+    init_weight12 = weights(1, 2);
+    init_weight21 = weights(2, 1);
+    init_weight22 = weights(2, 2);
+    
+    init_bias1 = biases(1);
+    init_bias2 = biases(2);
+    
+    % initialize output arrays
+    output_k = zeros(2, 1);
+    delta_kmin1 = zeros(2, 1);
+    weight_changes = zeros(2, 2);
+    bias_changes = zeros(2, 1);
+
+    sum_delta_out11 = 0;
+    sum_output_out11 = 0;
+    sum_delta_out12 = 0;
+    sum_delta_out21 = 0;
+    sum_output_out21 = 0;
+    net_sum1 = 0;
+    net_sum2 = 0;
+    sum_delta_out22 = 0;
+    
+    % first weight PE, first neuron
+    [sum_delta_out11, sum_output_out11, weight_changes(1, 1)] = weights_pe(delta_k(1), output_kmin1(1), [init_bias1], [0], init_weight11, eta);
+    
+    % second weight PE, first neuron
+    [sum_delta_out12, net_sum1, weight_changes(1, 2)] = weights_pe(delta_k(1), output_kmin1(2), sum_output_out11, [0], init_weight12, eta);
+    
+    % output of the first neuron
+    output_k(1) = act_pe(net_sum1, model, alpha);
+    
+    %----------------------------------------------------------------------
+    
+    % first weight PE, second neuron
+    [sum_delta_out21, sum_output_out21, weight_changes(2, 1)] = weights_pe(delta_k(2), output_kmin1(1), [init_bias2], sum_delta_out11, init_weight21, eta);
+    
+    % second weight PE, second neuron
+    [sum_delta_out22, net_sum2, weight_changes(2, 2)] = weights_pe(delta_k(2), output_kmin1(2), sum_output_out21, sum_delta_out12, init_weight22, eta);
+    
+    % output of the second neuron
+    output_k(2) = act_pe(net_sum2, model, alpha);
+    
+    % update the backpropagation outputs
+    delta_kmin1(1) = sum_delta_out21;
+    delta_kmin1(2) = sum_delta_out22;
+    
+    % update to the bias of neuron 1
+    k1 = delta_k(1);
+    bias_changes(1) = k1*eta - init_bias1;
+    
+    % update to the bias of neuron 2
+    k2 = delta_k(2);
+    bias_changes(2) = k2*eta - init_bias2;
+    
+end
+% Processing Element Components
+
+% Updates to the weights
+
+function [sum_delta_out, sum_output_out, weight_change] = weights_pe(delta_k, output_kmin1, partial_sum_out_k, partial_sum_delta_k, init_weight, eta)
+    seq_len = size(delta_k);
+    sum_delta_out = zeros(seq_len, 1);
+    sum_output_out = zeros(seq_len, 1);
+    weight_change = zeros(seq_len, 1);
+    weight = init_weight;
+    for i = 1:seq_len
+        delta = delta_k(i);
+        output = output_kmin1(i);
+        sum_o = partial_sum_out_k(i);
+        sum_s = partial_sum_delta_k(i);
+        sum_delta_out(i) = sum_s + delta*weight;
+        sum_output_out(i) = sum_o + output*weight;
+        weight = output*delta*eta - weight;
+        weight_change(i) = weight;
+    end
+end
+
+% Updates to the biases
+
+% function [net_sum, bias_change] = bias_pe(delta_k, sum_in, init_bias, eta)
+%     seq_len = size(delta_k);
+%     bias = init_bias;
+%     net_sum = zeros(seq_len, 1);
+%     bias_change = zeros(seq_len, 1);
+%     for i = 1:seq_len
+%         sum = sum_in(i);
+%         k = delta_k(i);
+%         net_sum(i) = bias + sum;
+%         bias = k*eta - bias;
+%         bias_change(i) = bias;
+%     end
+% end
+
+% Applying the Activation Function (ReLU, ELU, and Sigmoid)
+function output = act_pe(net_in, model, alpha)
+    seq_len = size(net_in);
+    output = zeros(seq_len, 1);
+    for i = 1:seq_len
+        omega = net_in(i);
+        if model == "sigmoid"
+            output(i) = 1 / (1 + exp(-omega));
+        elseif model == "relu"
+            output(i) = max(0, omega);
+        elseif model == "elu"
+            if omega >= 0
+                output(i) = omega;
+            else
+                output(i) = alpha * (exp(omega)-1);
+            end
+        else
+            print("error")
+        end
+    end
+end
+
+
 
 
 
