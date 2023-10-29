@@ -196,10 +196,7 @@ function delta_kmin1 = error_pe(output_kmin1, partial_sum_delta_k, model)
     % actually calculate the derivative of the activation function.
 
     % inputs:
-    % output_kmin1 - 2x1 array representing the output from the previous
-    % layer
-    % partial_sum_delta_k - running sum for the backpropagation
-    % model - name of the activation function as a stringt
+    % output_kmin1 - output from the previous layer
 
     if model == "sigmoid"
         delta_kmin1 = output_kmin1 * (1 - output_kmin1) * partial_sum_delta_k;
