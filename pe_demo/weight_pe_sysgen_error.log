@@ -1,0 +1,268 @@
+--------------------------------- Version Log ----------------------------------
+Version                                 Path
+System Generator 2023.1                 C:/Xilinx/Vivado/2023.1
+Matlab 9.12.0.2327980 (R2022a) Update 7 C:\Program Files\MATLAB\R2022a
+Vivado 2023.1                           C:/Xilinx/Vivado/2023.1
+--------------------------------------------------------------------------------
+Summary of Errors:
+Error 0001: The design contains HDL blocks. Add a Vitis Model Compose...
+     Block: 'weight_pe/AddSub'
+Error 0002: The design contains HDL blocks. Add a Vitis Model Compose...
+     Block: 'weight_pe/AddSub1'
+Error 0003: The design contains HDL blocks. Add a Vitis Model Compose...
+     Block: 'weight_pe/AddSub2'
+Error 0004: The design contains HDL blocks. Add a Vitis Model Compose...
+     Block: 'weight_pe/Delay2'
+Error 0005: The design contains HDL blocks. Add a Vitis Model Compose...
+     Block: 'weight_pe/Mult'
+Error 0006: The design contains HDL blocks. Add a Vitis Model Compose...
+     Block: 'weight_pe/Mult1'
+Error 0007: The design contains HDL blocks. Add a Vitis Model Compose...
+     Block: 'weight_pe/Mult2'
+Error 0008: The design contains HDL blocks. Add a Vitis Model Compose...
+     Block: 'weight_pe/rst'
+Error 0009: The design contains HDL blocks. Add a Vitis Model Compose...
+     Block: 'weight_pe/eta'
+Error 0010: The design contains HDL blocks. Add a Vitis Model Compose...
+     Block: 'weight_pe/weight_init'
+Error 0011: The design contains HDL blocks. Add a Vitis Model Compose...
+     Block: 'weight_pe/output_kmin1'
+Error 0012: The design contains HDL blocks. Add a Vitis Model Compose...
+     Block: 'weight_pe/delta_k'
+Error 0013: The design contains HDL blocks. Add a Vitis Model Compose...
+     Block: 'weight_pe/partial_sum_delta_k'
+Error 0014: The design contains HDL blocks. Add a Vitis Model Compose...
+     Block: 'weight_pe/partial_sum_out_k'
+Error 0015: The design contains HDL blocks. Add a Vitis Model Compose...
+     Block: 'weight_pe/Mult3'
+Error 0016: The design contains HDL blocks. Add a Vitis Model Compose...
+     Block: 'weight_pe/Mux'
+Error 0017: The design contains HDL blocks. Add a Vitis Model Compose...
+     Block: 'weight_pe/delta_out'
+Error 0018: The design contains HDL blocks. Add a Vitis Model Compose...
+     Block: 'weight_pe/output_out'
+Error 0019: The design contains HDL blocks. Add a Vitis Model Compose...
+     Block: 'weight_pe/update_weight'
+Error 0020: The design contains HDL blocks. Add a Vitis Model Compose...
+     Block: 'weight_pe/Mux1'
+--------------------------------------------------------------------------------
+
+Error 0001:
+
+Reported by:
+  'weight_pe/AddSub'
+
+Details:
+The design contains HDL blocks. Add a Vitis Model Composer Hub
+block at the top level in the design.
+
+--------------------------------------------------------------------------------
+
+Error 0001:
+
+Reported by:
+  'weight_pe/AddSub1'
+
+Details:
+The design contains HDL blocks. Add a Vitis Model Composer Hub
+block at the top level in the design.
+
+--------------------------------------------------------------------------------
+
+Error 0001:
+
+Reported by:
+  'weight_pe/AddSub2'
+
+Details:
+The design contains HDL blocks. Add a Vitis Model Composer Hub
+block at the top level in the design.
+
+--------------------------------------------------------------------------------
+
+Error 0001:
+
+Reported by:
+  'weight_pe/Delay2'
+
+Details:
+The design contains HDL blocks. Add a Vitis Model Composer Hub
+block at the top level in the design.
+
+--------------------------------------------------------------------------------
+
+Error 0001:
+
+Reported by:
+  'weight_pe/Mult'
+
+Details:
+The design contains HDL blocks. Add a Vitis Model Composer Hub
+block at the top level in the design.
+
+--------------------------------------------------------------------------------
+
+Error 0001:
+
+Reported by:
+  'weight_pe/Mult1'
+
+Details:
+The design contains HDL blocks. Add a Vitis Model Composer Hub
+block at the top level in the design.
+
+--------------------------------------------------------------------------------
+
+Error 0001:
+
+Reported by:
+  'weight_pe/Mult2'
+
+Details:
+The design contains HDL blocks. Add a Vitis Model Composer Hub
+block at the top level in the design.
+
+--------------------------------------------------------------------------------
+
+Error 0001:
+
+Reported by:
+  'weight_pe/rst'
+
+Details:
+The design contains HDL blocks. Add a Vitis Model Composer Hub
+block at the top level in the design.
+
+--------------------------------------------------------------------------------
+
+Error 0001:
+
+Reported by:
+  'weight_pe/eta'
+
+Details:
+The design contains HDL blocks. Add a Vitis Model Composer Hub
+block at the top level in the design.
+
+--------------------------------------------------------------------------------
+
+Error 0001:
+
+Reported by:
+  'weight_pe/weight_init'
+
+Details:
+The design contains HDL blocks. Add a Vitis Model Composer Hub
+block at the top level in the design.
+
+--------------------------------------------------------------------------------
+
+Error 0001:
+
+Reported by:
+  'weight_pe/output_kmin1'
+
+Details:
+The design contains HDL blocks. Add a Vitis Model Composer Hub
+block at the top level in the design.
+
+--------------------------------------------------------------------------------
+
+Error 0001:
+
+Reported by:
+  'weight_pe/delta_k'
+
+Details:
+The design contains HDL blocks. Add a Vitis Model Composer Hub
+block at the top level in the design.
+
+--------------------------------------------------------------------------------
+
+Error 0001:
+
+Reported by:
+  'weight_pe/partial_sum_delta_k'
+
+Details:
+The design contains HDL blocks. Add a Vitis Model Composer Hub
+block at the top level in the design.
+
+--------------------------------------------------------------------------------
+
+Error 0001:
+
+Reported by:
+  'weight_pe/partial_sum_out_k'
+
+Details:
+The design contains HDL blocks. Add a Vitis Model Composer Hub
+block at the top level in the design.
+
+--------------------------------------------------------------------------------
+
+Error 0001:
+
+Reported by:
+  'weight_pe/Mult3'
+
+Details:
+The design contains HDL blocks. Add a Vitis Model Composer Hub
+block at the top level in the design.
+
+--------------------------------------------------------------------------------
+
+Error 0001:
+
+Reported by:
+  'weight_pe/Mux'
+
+Details:
+The design contains HDL blocks. Add a Vitis Model Composer Hub
+block at the top level in the design.
+
+--------------------------------------------------------------------------------
+
+Error 0001:
+
+Reported by:
+  'weight_pe/delta_out'
+
+Details:
+The design contains HDL blocks. Add a Vitis Model Composer Hub
+block at the top level in the design.
+
+--------------------------------------------------------------------------------
+
+Error 0001:
+
+Reported by:
+  'weight_pe/output_out'
+
+Details:
+The design contains HDL blocks. Add a Vitis Model Composer Hub
+block at the top level in the design.
+
+--------------------------------------------------------------------------------
+
+Error 0001:
+
+Reported by:
+  'weight_pe/update_weight'
+
+Details:
+The design contains HDL blocks. Add a Vitis Model Composer Hub
+block at the top level in the design.
+
+--------------------------------------------------------------------------------
+
+Error 0001:
+
+Reported by:
+  'weight_pe/Mux1'
+
+Details:
+The design contains HDL blocks. Add a Vitis Model Composer Hub
+block at the top level in the design.
+
+--------------------------------------------------------------------------------
