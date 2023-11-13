@@ -1,7 +1,9 @@
-output_out = out.output_out.DATA(1:10).';
-delta_out = out.delta_out.DATA(1:10).';
-new_weight = out.update_weight.DATA(1:10).';
+output1 = out.o_sum_out1.DATA(1:10).';
+output2 = out.o_sum_out2.DATA(1:10).';
+delta = out.delta_sum_out.DATA(1:10).';
+oi = out.oi_out.DATA(1:10).';
 
-display(output_out);
-display(delta_out);
-display(new_weight);
+display(output1);
+display(output2);
+display(delta);
+display(oi);
