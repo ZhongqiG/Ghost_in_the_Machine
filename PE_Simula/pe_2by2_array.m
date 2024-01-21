@@ -65,7 +65,7 @@ function [output_k, delta_kmin1, weight_changes, bias_changes] = pe_array(weight
     % output of the second neuron
     output_k(2) = act_pe(net_sum1, model, alpha);
     
-    % update the backpropagation outputs
+    % update the backpropagation outputs (from second to first layer)
     delta_kmin1(1) = error_pe(output_kmin1(1), sum_delta_out10, model);
     delta_kmin1(2) = error_pe(output_kmin1(2), sum_delta_out11, model);
     
@@ -209,6 +209,19 @@ function delta_kmin1 = error_pe(output_kmin1, partial_sum_delta_k, model)
         delta_kmin1 = 0;
     else
         print("Error")
+    end
+end
+
+function final_layer_delta = final_layer_error_pe(output, target, cost)
+    % output - output from the last layer of calculation
+    % target - target vector for training
+    % cost - name of the cost function used
+    % note that this final error layer is only implemented for the sigmoid
+    % activitation function being used throughout the network
+    if cost == "mean_squared_error"
+        final_layer_delta = output_kmin1 - target;
+    elseif cost == "exponentially_weighted"
+        % to be implemented
     end
 end
 
