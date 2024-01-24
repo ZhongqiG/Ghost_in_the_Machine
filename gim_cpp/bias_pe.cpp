@@ -1,14 +1,18 @@
-#include <stdio.h>
-#include <math.h>
 #include "gim_model.h"
 
-// block of bias pe functions (split up to reduce issues with returning arrays)
-float bias_pe_net_sum(float init_bias, float sum_in){
-    float net_sum;
-    return net_sum = init_bias + sum_in;
-}
+// bias pe definition
 
-float bias_pe_bias_change(float init_bias, float delta_k, float eta){
-    float bias_change;
-    return bias_change = bias_change = init_bias - delta_k * eta;
+fixed_16* bias_pe(fixed_16 delta_k, fixed_16 sum_in, fixed_16 init_bias, fixed_16 eta, fixed_16 training) {
+    fixed_16 net_sum = init_bias + sum_in;
+    fixed_16 bias_change = init_bias - (delta_k * eta);
+    fixed_16 return_output[2];
+    if (training == 0) {
+        return_output[0] = 0;
+        return_output[1] = 0;
+    }
+    else {
+        return_output[0] = net_sum;
+        return_output[1] = bias_change;
+    }
+    return return_output;
 }

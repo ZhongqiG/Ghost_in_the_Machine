@@ -1,10 +1,8 @@
-#include <stdio.h>
-#include <math.h>
 #include "gim_model.h"
 
 // error pe function
-float error_pe(float output_kmin1, float partial_sum_delta_k, char model, float alpha){
-    float error = 0;
+fixed_16 error_pe(fixed_16 output_kmin1, fixed_16 partial_sum_delta_k, char model, fixed_16 alpha) {
+    fixed_16 error = 0;
     if (model == 's'){
         error = output_kmin1 * (1 - output_kmin1) * partial_sum_delta_k;
     }
@@ -25,7 +23,7 @@ float error_pe(float output_kmin1, float partial_sum_delta_k, char model, float 
         }
     }
     else {
-        printf("Error: Invalid Model Name");
+        std::cout << "Error: Invalid Model Name" << std::endl;
         error = 0;
     }
     return error;
