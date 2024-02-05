@@ -18,7 +18,8 @@ from IPython.display import display
 use_saved_weights = False
 
 if not use_saved_weights:
-  shutil.rmtree('saved_data')
+  if os.path.exists('saved_data'):
+    shutil.rmtree('saved_data')
   os.mkdir('saved_data')
 
 '''
