@@ -1,6 +1,6 @@
 '''
 Maya Borowicz, using code developed by Davis Jackson and James Ding
-01/31/2024
+02/05/2024
 
 This Class can be used to simulate the training and testing
 of data objects using the GIM architecture.
@@ -13,16 +13,11 @@ class GIM_simulation:
     def __init__(self, activation_function="relu", weight_array=[], bias_array=[], alpha=0.1, learning_rate=0.1):
         # Initialize the data object
 
-        self.weights = weight_array
-        self.biases = bias_array
-        self.layers = len(weight_array)
+        self.weights = []
+        self.biases = []
+        self.layers = 0
 
-        # Check that weight and bias array have the same dimensions
-        if not self.check_parameter_dimensions():
-            self.weights = []
-            self.biases = []
-            self.layers = 0
-            print("ERROR: inputted weights and biases do not have the same dimensions")
+        self.set_initial_condition(weight_array, bias_array)
         
         self.activation_function = activation_function
 
@@ -32,23 +27,15 @@ class GIM_simulation:
     def set_initial_condition(self, initial_weights_array, initial_biases_array):
         # Add an array with the initial weights and baises
 
-        # Save old weights and biases
-        old_weight_array = self.weights
-        old_bias_array = self.biases
-        
-        # Set the weights and biases
-        self.weights = initial_weights_array
-        self.biases = initial_biases_array
-
         # Check that the layers have the same nodes
         if not self.check_parameter_dimensions():
-            self.weights = old_weight_array
-            self.biases = old_bias_array
             print("ERROR: Dimensions do not match between weights and biases")
         else:
+            self.weights = initial_weights_array
+            self.biases = initial_biases_array
             self.layers = len(self.weights)
         
-    def set_random_initial_condition(self, layer_array, number_times_generated):
+    def set_random_initial_condition(self, layer_array, number_times_generated=1):
         # Set random weights and biases based off the nodes and layers
 
         # Set a random seed
