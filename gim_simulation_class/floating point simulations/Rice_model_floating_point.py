@@ -194,7 +194,7 @@ if not use_saved_weights:
   axes[0].set_ylabel("Mean Squared Error")
 
   # Plot the number of correct predictions during training
-  percent_correct_predictions = [x/len(test_data_points)*100 for x in num_correct_predictions]
+  percent_correct_predictions = [x/len(train_data_points)*100 for x in num_correct_predictions]
 
   axes[1].plot(percent_correct_predictions, "--")
   axes[1].plot(percent_correct_predictions, "o")
