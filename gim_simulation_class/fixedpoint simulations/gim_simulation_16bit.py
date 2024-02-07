@@ -445,10 +445,10 @@ class GIM_simulation_16bit:
             prediction = self.get_prediction([[actual_outputs[idx]]], how_close)[0]
 
             # Check that prediction is not None or undefined
-            if prediction != [None]:
+            if prediction[0] is not None:
 
                 # Is the prediction is the same as the expected?
-                if prediction == [self.change_value_fixedpoint(expected_outputs[idx])]:
+                if prediction == self.recursive_change_array_to_fixedpoint(expected_outputs[idx]):
                     correct_predictions += 1
 
         percent_predictions_correct = correct_predictions/len(actual_outputs)
