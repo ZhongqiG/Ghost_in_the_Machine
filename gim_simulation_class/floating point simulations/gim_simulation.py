@@ -185,7 +185,7 @@ class GIM_simulation:
                 total_squared_error = total_squared_error + squared_error
 
                 # Find if the prediction was correct for the data point
-                prediction = self.get_prediction(output, 0.2) # within 20% of the correct answer
+                prediction = self.get_prediction(output, 0.3) # within 20% of the correct answer
 
                 # Check if prediction is accurate
                 if prediction == expected_output:
