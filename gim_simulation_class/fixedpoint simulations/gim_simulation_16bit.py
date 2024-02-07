@@ -141,9 +141,12 @@ class GIM_simulation_16bit:
 
             # Change the data point to fixedpoint if it is not already
             fixedpoint_data_point = self.recursive_change_array_to_fixedpoint(data_point)
-            
+
+            # Reshape the data point
+            formatted_fixedpoint_data_point = np.array(fixedpoint_data_point).reshape(len(fixedpoint_data_point),1)
+
             # Set the initial input to the layer
-            layer_input = fixedpoint_data_point
+            layer_input = formatted_fixedpoint_data_point
 
             # Run the data point through each layer
             for idx in range(self.layers):
@@ -156,6 +159,11 @@ class GIM_simulation_16bit:
                 vectorized_actiavtion_function = np.vectorize(self.__activation_pe)
                 post_activation_output = vectorized_actiavtion_function(layer_output)
                 layer_input = post_activation_output
+
+            # Reformat the output
+            post_activation_output_nparray = np.array(post_activation_output)
+            size_of_output = self.weights[-1].shape[0]
+            reshaped_post_activation_output = post_activation_output_nparray.reshape(1, size_of_output)
 
             # Save the output for this data point
             computed_outputs.append(post_activation_output)
@@ -395,13 +403,16 @@ class GIM_simulation_16bit:
         #  while 0.1 percent incorrect would make the prediction a 1
 
         # Set base answer
-        prediction = actual_output[0][0]
+        prediction = None
+
+        # Get float of the actual output
+        actual_output_as_float = float(actual_output[0][0])
 
         # Based on actiavtion function, determine if closer to 1 or zero
         if self.activation_function == "sigmoid":
 
             # For Sigmoid of the prediction is based on if the output is bigger or smaller than 0.5
-            if prediction >= 0.5:
+            if actual_output_as_float >= 0.5:
                 prediction = 1
             else:
                 prediction = 0
@@ -409,12 +420,40 @@ class GIM_simulation_16bit:
         else:
 
             # other activation faunction should be within a certain accuracy
-            if abs(1-float(prediction)) <= percent_incorrect:
+            if abs(1 - actual_output_as_float) <= percent_incorrect:
                 prediction = self.change_value_fixedpoint(1)
-            elif abs(0-float(prediction)) <= percent_incorrect:
+            elif abs(0 - actual_output_as_float) <= percent_incorrect:
                 prediction = self.change_value_fixedpoint(0)
 
         return [[prediction]]
+
+    def get_prediction_accuracy(self, actual_outputs, expected_outputs, how_close=0.3):
+        # See the percent of predictions that were accurate
+
+        # Check that there are outputs
+        if not len(actual_outputs) != 0:
+            print("ERROR: no actual outputs provided")
+            return None
+
+        # Create variable to track the number of correct predictions
+        correct_predictions = 0
+
+        # Go through each actual output and check if the prediction made is expected
+        for idx in range(len(actual_outputs)):
+
+            # Get the prediction based on the output
+            prediction = self.get_prediction([[actual_outputs[idx]]], how_close)[0]
+
+            # Check that prediction is not None or undefined
+            if prediction[0] is not None:
+
+                # Is the prediction is the same as the expected?
+                if prediction == self.recursive_change_array_to_fixedpoint(expected_outputs[idx]):
+                    correct_predictions += 1
+
+        percent_predictions_correct = correct_predictions/len(actual_outputs)
+
+        return percent_predictions_correct
 
     def recursive_change_array_to_fixedpoint(self, array):
         # Change an inputted array to fixed point format
