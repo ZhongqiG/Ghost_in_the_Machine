@@ -77,17 +77,17 @@ Get the accuracy of the trained network
 # Plot the Mean Squared Error
 fig, axes = plt.subplots(2, 1)
 
-fig.suptitle('Changes in Mean Squared Error and \nthe Percent of Correct Predictions during Training')
+fig.suptitle('Changes in Mean Squared Error and the Percent of Correct Predictions during Training\nfor the 2-input XOR with 5 integer and 11 fraction bits')
 
 axes[0].plot(mean_squared_error, "--")
-axes[0].plot(mean_squared_error, "o")
+axes[0].plot(mean_squared_error, "o", markersize=2.5)
 axes[0].set_ylabel("Mean Squared Error")
 
 # Plot the number of correct predictions during training
 percent_correct_predictions = [x/len(input_data_points)*100 for x in num_correct_predictions]
 
 axes[1].plot(percent_correct_predictions, "--")
-axes[1].plot(percent_correct_predictions, "o")
+axes[1].plot(percent_correct_predictions, "o", markersize=2.5)
 axes[1].set_xlabel("Epoch")
 axes[1].set_ylabel("Percent of Predictions Correct")
 
