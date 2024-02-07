@@ -442,11 +442,14 @@ class GIM_simulation_16bit:
         for idx in range(len(actual_outputs)):
 
             # Get the prediction based on the output
-            prediction = self.get_prediction([[actual_outputs[idx]]], how_close)
+            prediction = self.get_prediction([[actual_outputs[idx]]], how_close)[0]
 
-            # Is the prediction is the same as the expected?
-            if prediction == self.change_value_fixedpoint(expected_outputs[idx]):
-                correct_predictions += 1
+            # Check that prediction is not None or undefined
+            if prediction != [None]:
+
+                # Is the prediction is the same as the expected?
+                if prediction == [self.change_value_fixedpoint(expected_outputs[idx])]:
+                    correct_predictions += 1
 
         percent_predictions_correct = correct_predictions/len(actual_outputs)
 
