@@ -141,9 +141,12 @@ class GIM_simulation_16bit:
 
             # Change the data point to fixedpoint if it is not already
             fixedpoint_data_point = self.recursive_change_array_to_fixedpoint(data_point)
-            
+
+            # Reshape the data point
+            formatted_fixedpoint_data_point = np.array(fixedpoint_data_point).reshape(len(fixedpoint_data_point),1)
+
             # Set the initial input to the layer
-            layer_input = fixedpoint_data_point
+            layer_input = formatted_fixedpoint_data_point
 
             # Run the data point through each layer
             for idx in range(self.layers):
@@ -156,6 +159,11 @@ class GIM_simulation_16bit:
                 vectorized_actiavtion_function = np.vectorize(self.__activation_pe)
                 post_activation_output = vectorized_actiavtion_function(layer_output)
                 layer_input = post_activation_output
+
+            # Reformat the output
+            post_activation_output_nparray = np.array(post_activation_output)
+            size_of_output = self.weights[-1].shape[0]
+            reshaped_post_activation_output = post_activation_output_nparray.reshape(1, size_of_output)
 
             # Save the output for this data point
             computed_outputs.append(post_activation_output)
