@@ -8,10 +8,13 @@ of data objects using the GIM architecture with fixed point values.
 
 # Import Packages
 import numpy as np
+import time
 import matplotlib.pyplot as plt
 from gim_simulation_16bit import GIM_simulation_16bit
 from fixedpoint.fixedpoint import FixedPoint
 
+# Start Timer
+start_time = time.time()
 
 # Set random seed to keep random numbers consistent (if desired)
 np.random.seed(2)
@@ -69,6 +72,9 @@ trained_weights, trained_biases, mean_squared_error, num_correct_predictions = m
 #print(my_simulation_3.biases)
 
 # Error the weights and biases are all zero????
+
+# Display how long it took to run
+print("\nProcess finished in %s seconds " % (time.time() - start_time))
 
 '''
 Get the accuracy of the trained network
