@@ -416,6 +416,31 @@ class GIM_simulation_16bit:
 
         return [[prediction]]
 
+    def get_prediction_accuracy(self, actual_outputs, expected_outputs, how_close=0.3):
+        # See the percent of predictions that were accurate
+
+        # Check that there are outputs
+        if not len(actual_outputs) != 0:
+            print("ERROR: no actual outputs provided")
+            return None
+
+        # Create variable to track the number of correct predictions
+        correct_predictions = 0
+
+        # Go through each actual output and check if the prediction made is expected
+        for idx in range(len(actual_outputs)):
+
+            # Get the prediction based on the output
+            prediction = self.get_prediction([[actual_outputs[idx]]], how_close)
+
+            # Is the prediction is the same as the expected?
+            if prediction == self.change_value_fixedpoint(expected_outputs[idx]):
+                correct_predictions += 1
+
+        percent_predictions_correct = correct_predictions/len(actual_outputs)
+
+        return percent_predictions_correct
+
     def recursive_change_array_to_fixedpoint(self, array):
         # Change an inputted array to fixed point format
         
