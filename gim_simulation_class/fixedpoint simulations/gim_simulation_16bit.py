@@ -395,13 +395,16 @@ class GIM_simulation_16bit:
         #  while 0.1 percent incorrect would make the prediction a 1
 
         # Set base answer
-        prediction = actual_output[0][0]
+        prediction = None
+
+        # Get float of the actual output
+        actual_output_as_float = float(actual_output[0][0])
 
         # Based on actiavtion function, determine if closer to 1 or zero
         if self.activation_function == "sigmoid":
 
             # For Sigmoid of the prediction is based on if the output is bigger or smaller than 0.5
-            if prediction >= 0.5:
+            if actual_output_as_float >= 0.5:
                 prediction = 1
             else:
                 prediction = 0
@@ -409,9 +412,9 @@ class GIM_simulation_16bit:
         else:
 
             # other activation faunction should be within a certain accuracy
-            if abs(1-float(prediction)) <= percent_incorrect:
+            if abs(1 - actual_output_as_float) <= percent_incorrect:
                 prediction = self.change_value_fixedpoint(1)
-            elif abs(0-float(prediction)) <= percent_incorrect:
+            elif abs(0 - actual_output_as_float) <= percent_incorrect:
                 prediction = self.change_value_fixedpoint(0)
 
         return [[prediction]]
