@@ -10,10 +10,14 @@ import pandas as pd
 import numpy as np
 import os
 import shutil
+import time
 import matplotlib.pyplot as plt
-from gim_simulation_16bit import GIM_simulation_16bit
+from gim_simulation import GIM_simulation
 from scipy.io.arff import loadarff
 from IPython.display import display
+
+# Start Timer
+start_time = time.time()
 
 use_saved_weights = False
 
@@ -47,7 +51,7 @@ def format_rice_data(filename, scrambled=False):
 
   # Normalization
   df_dropped= pd.DataFrame.copy(df_raw.drop("Class", axis=1), deep=True)
-  df_normalized = (df_dropped - df_dropped.mean())/df_dropped.std()
+  df_normalized = (df_dropped - df_dropped.min())/(df_dropped.max() - df_dropped.min())
 
   # Convert to an array
   data_array = df_normalized.to_numpy()
@@ -67,15 +71,15 @@ Selecting the Data Points
 '''
 
 # Convert to numpy array
-num_points = 500
+num_points = 600
 
 # Select the first x points for training
 train_data_points = data_array[:num_points]
 train_expected_outputs = expected_output_array[:num_points]
 
 # Select the next x points for testing
-test_data_points = data_array[num_points:2*num_points]
-test_expected_outputs = expected_output_array[num_points:2*num_points]
+test_data_points = data_array[num_points:num_points+300]
+test_expected_outputs = expected_output_array[num_points:num_points+300]
 
 # Analysis of training data
 num_ones = 0
@@ -103,7 +107,7 @@ my_simulation.set_learning_rate(10**-4)
 
 # Generate random weights
 if not use_saved_weights:
-  my_simulation.set_random_initial_condition([7,20,10,5,1], number_times_generated=1)
+  my_simulation.set_random_initial_condition([7,7,1], number_times_generated=1)
 
 # Or used weights saved from a previous training
 # Retrieve the saved weights
@@ -140,7 +144,7 @@ Train the data
 # train the simulation
 # if using old weights, do not train for new ones
 if not use_saved_weights:
-  trained_weights, trained_biases, mean_squared_error, num_correct_predictions = my_simulation.train(train_data_points, train_expected_outputs, num_iteration=100)
+  trained_weights, trained_biases, mean_squared_error, num_correct_predictions = my_simulation.train(train_data_points, train_expected_outputs, num_iteration=200)
 
 # Save the trained weights to a file
 if not use_saved_weights:
@@ -159,7 +163,7 @@ num_zero_expected_outputs = 0
 
 if len(actual_outputs) != 0:
   for idx in range(len(actual_outputs)):
-    prediction = my_simulation.get_prediction([[actual_outputs[idx]]], 0.05)
+    prediction = my_simulation.get_prediction([[actual_outputs[idx]]], 0.3)
 
     if prediction == [[0]]:
       num_zero_predictions += 1
@@ -179,6 +183,9 @@ print("Number if points that should have been zero: ", num_zero_expected_outputs
       "\nNumber of points where the actual output was zero: ", num_zero_actual_outputs, 
       "\nNumber of points where the prediction was zero: ",num_zero_predictions)
 
+## Display how long it took to run
+print("\nProcess finished in %s seconds " % (time.time() - start_time))
+
 '''
 Plotting
 '''
@@ -190,14 +197,15 @@ if not use_saved_weights:
   fig.suptitle('Changes in Mean Squared Error and \nthe Percent of Correct Predictions during Training')
 
   axes[0].plot(mean_squared_error, "--")
-  axes[0].plot(mean_squared_error, "o")
+  axes[0].plot(mean_squared_error, "o", markersize=4)
   axes[0].set_ylabel("Mean Squared Error")
+  axes[0].set_ylim([0,0.5])
 
   # Plot the number of correct predictions during training
   percent_correct_predictions = [x/len(train_data_points)*100 for x in num_correct_predictions]
 
   axes[1].plot(percent_correct_predictions, "--")
-  axes[1].plot(percent_correct_predictions, "o")
+  axes[1].plot(percent_correct_predictions, "o", markersize=4)
   axes[1].set_xlabel("Epoch")
   axes[1].set_ylabel("Percent of Predictions Correct")
 
