@@ -7,8 +7,10 @@ import sklearn
 import pandas as pd
 import numpy as np
 from scipy.io.arff import loadarff
+
 import matplotlib.pyplot as plt
 import mpl_toolkits.mplot3d
+import matplotlib.animation as animation
 
 from IPython.display import display
 from rice_model_functions import convert_rice_class_to_number, normalize_dataframe
@@ -70,3 +72,10 @@ ax.zaxis.set_ticklabels([])
 #plt.show()
 
 #print(pd.DataFrame(pca.components_,columns=X_raw.columns,index = ['PC-1','PC-2','PC-3']))
+
+def rotate(angle):
+    ax.view_init(azim=angle)
+
+#print("Making animation")
+#rot_animation = animation.FuncAnimation(fig, rotate, frames=np.arange(0, 362, 2), interval=100)
+#rot_animation.save('rice_model_pca.gif', dpi=80, writer='imagemagick')
