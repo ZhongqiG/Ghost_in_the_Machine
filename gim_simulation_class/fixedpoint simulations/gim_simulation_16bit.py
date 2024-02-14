@@ -180,6 +180,12 @@ class GIM_simulation_16bit:
         # Create an archive of the mean squared error every epoch
         mse_archive = []
 
+        # Create a place to save the weight value
+        avg_weight = []
+
+        # Save the largest weight
+        largest_weight = []
+
         # Create a dictionary to store if the prediction is correct
         prediction_accurate_for_epoch = {}
         for data_point in input_data_points:
@@ -219,13 +225,13 @@ class GIM_simulation_16bit:
                     # Calculate the output after running the data through the layer
                     # Weights and biases are unchanged here
                     [output, dummy_delta, dummy_weights, dummy_biases] = self.__array(layer_weights, layer_biases, next_layer_input, delta, self.learning_rate, self.activation_function, self.alpha, layer_weights.shape)
-
+                    
                     # Save the output to an array of outputs
                     output_archive.append(output)
-
+                    
                     # Set the input for the layer after
                     next_layer_input = output
-
+                
                 # Find the correct delta value to input into the next layer
                 if self.activation_function == "sigmoid":
                     delta = -(expected_output - output) * output * ([1,1,1] - output)
@@ -250,7 +256,7 @@ class GIM_simulation_16bit:
                 total_squared_error = total_squared_error + squared_error
 
                 # Find if the prediction was correct for the data point
-                prediction = self.get_prediction(output, 0.3) # within 30% of the correct answer
+                prediction = self.get_prediction(output, 0.5) # within 50% of the correct answer
 
                 # Check if prediction is accurate
                 if prediction == expected_output:
@@ -291,10 +297,21 @@ class GIM_simulation_16bit:
             # Save the mean squared error
             mse_archive.append(mean_squred_error)
 
+            # Save the weight
+            new_list = []
+            for value in self.weights:
+                x = value.flatten().tolist()
+                for next_value in x:
+                    new_list.append(float(next_value))
+
+            avg_weight.append(np.mean(new_list))
+
+            largest_weight.append(max(new_list))
+
             # Save the number of correct predictions
             number_of_accurate_predictions_per_epoch.append(num_correct_predictions)
 
-        return self.weights, self.biases, mse_archive, number_of_accurate_predictions_per_epoch
+        return self.weights, self.biases, mse_archive, avg_weight, largest_weight, number_of_accurate_predictions_per_epoch
 
     def __weights_pe(self, delta_k, output_kmin1, partial_sum_out_k, partial_sum_delta_k, init_weight, eta):
         # Compute the calculated output and new weights
@@ -352,6 +369,7 @@ class GIM_simulation_16bit:
         bias_changes = self.recursive_change_array_to_fixedpoint(np.zeros(array_size[0]))
         partial_delta_sum = self.recursive_change_array_to_fixedpoint(np.zeros(array_size[1]))
 
+        
         # iterate through each of the neurons in the array
         # begin by iterating through each row
         for n in range(array_size[0]):
@@ -362,18 +380,19 @@ class GIM_simulation_16bit:
             # iterate through each column of weight PEs in the neuron
             for c in range(array_size[1]):
                 [partial_delta_sum[c], partial_output_sum, weight_changes[n, c]] = self.__weights_pe(delta_k[n], output_kmin1[c], partial_output_sum, partial_delta_sum[c], weights[n, c], eta)
+
             # apply the bias PE
             [net_sum, bias_changes[n]] = self.__bias_pe(delta_k[n], partial_output_sum, biases[n], eta)
 
             # apply the activation function
             output_k[n] = self.__activation_pe(net_sum)
-
+        
         output_k = np.array(output_k).reshape(array_size[0],1)
-
+        
         # update the backpropagation outputs
         for c in range(array_size[1]):
             delta_kmin1[c] = self.__error_pe(output_kmin1[c], partial_delta_sum[c], model, alpha)
-
+        
         return [output_k, delta_kmin1, weight_changes, bias_changes]
 
     def check_parameter_dimensions(self, weights, biases):
@@ -493,20 +512,20 @@ class GIM_simulation_16bit:
     def fp_add(self, *args):
         # Add an arbitrary number of fixedpoint numbers 
         
-        sum = self.change_value_fixedpoint(0)
+        sum = 0
         for arg in args:
-            sum += arg
+            sum += float(arg)
 
-        return self.change_value_fixedpoint(float(sum))
+        return self.change_value_fixedpoint(sum)
 
     def fp_multiply(self, *args):
         # Multiply an arbitrary number of fixedpoint numbers
 
-        product = self.change_value_fixedpoint(1)
+        product = 1
         for arg in args:
-            product *= arg
+            product *= float(arg)
 
-        return self.change_value_fixedpoint(float(product))
+        return self.change_value_fixedpoint(product)
 
     def fp_subtract(self, value_1, value_2):
         # Subtract one fixedpoint number from another
@@ -531,7 +550,7 @@ class GIM_simulation_16bit:
             return np.array(empty_list, dtype=object)
 
         elif isinstance(array, FixedPoint):
-            return str(array)
+            return float(array)
 
         else:
             return []

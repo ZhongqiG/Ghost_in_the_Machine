@@ -50,10 +50,10 @@ class GIM_simulation:
 
             # Create random weights and biases for each layer
             for idx in range(len(layer_array) - 1):
-                initial_weights.append(np.random.rand(layer_array[idx + 1], layer_array[idx]))
+                initial_weights.append(np.random.rand(layer_array[idx + 1], layer_array[idx])*2-1)
 
             for idx in range(len(layer_array) - 1):
-                initial_biases.append(np.random.rand(layer_array[idx + 1], 1))
+                initial_biases.append(np.random.rand(layer_array[idx + 1], 1)*2-1)
 
         # Set the weights to random weights
         self.weights = initial_weights
@@ -115,6 +115,9 @@ class GIM_simulation:
         # Create an archive of the mean squared error every epoch
         mse_archive = []
 
+        # Create an archieve of the maximum output
+        max_output = []
+
         # Create a dictionary to store if the prediction is correct
         prediction_accurate_for_epoch = {}
         for data_point in input_data_points:
@@ -131,6 +134,9 @@ class GIM_simulation:
 
             # Create variable to store the number of correct predictions in this epoch
             num_correct_predictions = 0
+
+            # Store the maximum output for the data point
+            max_output_for_dp = 0
 
             # Run each piece of training data through the loop
             for idx in range(len(input_data_points)):
@@ -161,6 +167,10 @@ class GIM_simulation:
                     # Set the input for the layer after
                     next_layer_input = output
 
+                # Update max output
+                if np.max(output) > max_output_for_dp:
+                    max_output_for_dp = np.max(output)
+
                 # Find the correct delta value to input into the next layer
                 if self.activation_function == "sigmoid":
                     delta = -(expected_output - output) * output * ([1,1,1] - output)
@@ -185,7 +195,7 @@ class GIM_simulation:
                 total_squared_error = total_squared_error + squared_error
 
                 # Find if the prediction was correct for the data point
-                prediction = self.get_prediction(output, 0.3) # within 20% of the correct answer
+                prediction = self.get_prediction(output, 0.5) # within 20% of the correct answer
 
                 # Check if prediction is accurate
                 if prediction == expected_output:
@@ -226,10 +236,13 @@ class GIM_simulation:
             # Save the mean squared error
             mse_archive.append(mean_squred_error[0])
 
+            # Save the maximum output
+            max_output.append(max_output_for_dp)
+
             # Save the number of correct predictions
             number_of_accurate_predictions_per_epoch.append(num_correct_predictions)
 
-        return self.weights, self.biases, mse_archive, number_of_accurate_predictions_per_epoch
+        return self.weights, self.biases, mse_archive, max_output, number_of_accurate_predictions_per_epoch
 
     def __weights_pe(self, delta_k, output_kmin1, partial_sum_out_k, partial_sum_delta_k, init_weight, eta):
         # Compute the calculated output and new weights
@@ -359,4 +372,5 @@ class GIM_simulation:
                 prediction = 0
 
         return [[prediction]]
+
 

@@ -36,37 +36,38 @@ expected_output_array = class_array_as_number
 
 # Choose how many data points for training and testing
 # Train on first x data points
-train_data_points = data_array[:100]
-train_expected_outputs = expected_output_array[:100]
+train_data_points = data_array[:1]
+train_expected_outputs = expected_output_array[:1]
 
 # Test on y data points
-test_data_points = data_array[1000:1100]
-test_expected_outputs = expected_output_array[1000:1100]
+test_data_points = data_array[1000:1010]
+test_expected_outputs = expected_output_array[1000:1010]
 
 ## Train the model
 # Create simulation object
 rice_model_simulation = GIM_simulation_16bit(integer_bits=7, fraction_bits=9, activation_function="relu")
-rice_model_simulation.set_random_initial_condition(layer_array=[7,7,1]) # Set random initial weights and biases
-rice_model_simulation.set_learning_rate(10**-3) # Set learning rate to very small
+rice_model_simulation.set_random_initial_condition(layer_array=[7,7,7,1]) # Set random initial weights and biases
+rice_model_simulation.set_learning_rate(10**-5) # Set learning rate to very small
+rice_model_simulation.set_alpha(0.01) # Set learning rate to very small
 
 # Find how accurate the random initial condition is
 # Perform testing
 test_actual_outputs = rice_model_simulation.test(test_data_points)
 
 # Get the prediction accuracy of test
-percent_prediction_correct_before_training = rice_model_simulation.get_prediction_accuracy(test_actual_outputs, test_expected_outputs, how_close=0.2)
+percent_prediction_correct_before_training = rice_model_simulation.get_prediction_accuracy(test_actual_outputs, test_expected_outputs, how_close=0.5)
 
 # Print the percent of test points correctly predicted before training
 print("When ", len(test_data_points), " data points were tested before training, ", percent_prediction_correct_before_training, "% were predicted correctly.")
 
 # Training Function
-_, _, mean_squared_error, num_correct_predictions = rice_model_simulation.train(train_data_points, train_expected_outputs, num_iteration=10)
-
+_, _, mean_squared_error, avg_weight, largest_weight, num_correct_predictions = rice_model_simulation.train(train_data_points, train_expected_outputs, num_iteration=1)
+'''
 ## Test the performance of the trained model on new data
 test_actual_outputs = rice_model_simulation.test(test_data_points)
 
 # Get the prediction accuracy of test
-percent_prediction_correct_after_training = rice_model_simulation.get_prediction_accuracy(test_actual_outputs, test_expected_outputs, how_close=0.2)
+percent_prediction_correct_after_training = rice_model_simulation.get_prediction_accuracy(test_actual_outputs, test_expected_outputs, how_close=0.5)
 
 # Print the percent of test points correctly predicted after training
 print("When ", len(test_data_points), " data points were tested after training, ", percent_prediction_correct_after_training, "% were predicted correctly.")
@@ -76,7 +77,7 @@ print("\nProcess finished in %s seconds " % (time.time() - start_time))
 
 ## Plot the Mean Squared Error
 # Create the Figure
-fig, axes = plt.subplots(2, 1)
+fig, axes = plt.subplots(3, 1)
 fig.suptitle('Changes in Mean Squared Error and the Percent of Correct Predictions during Training\n for 7 integer and 9 fraction bits')
 
 axes[0].plot(mean_squared_error, "--")
@@ -91,5 +92,13 @@ axes[1].plot(percent_correct_predictions, "o")
 axes[1].set_xlabel("Epoch")
 axes[1].set_ylabel("Percent of Predictions\nCorrect")
 
+# Plot the average weight
+
+axes[2].plot(largest_weight, "--")
+axes[2].plot(largest_weight, "o")
+axes[2].set_xlabel("Epoch")
+axes[2].set_ylabel("Largest Weight")
+
 # Show both plots
 plt.show()
+'''
