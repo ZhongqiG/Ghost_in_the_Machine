@@ -36,8 +36,8 @@ expected_output_array = class_array_as_number
 
 # Choose how many data points for training and testing
 # Train on first x data points
-train_data_points = data_array[:1]
-train_expected_outputs = expected_output_array[:1]
+train_data_points = data_array[:100]
+train_expected_outputs = expected_output_array[:100]
 
 # Test on y data points
 test_data_points = data_array[1000:1010]
@@ -61,8 +61,8 @@ percent_prediction_correct_before_training = rice_model_simulation.get_predictio
 print("When ", len(test_data_points), " data points were tested before training, ", percent_prediction_correct_before_training, "% were predicted correctly.")
 
 # Training Function
-_, _, mean_squared_error, avg_weight, largest_weight, num_correct_predictions = rice_model_simulation.train(train_data_points, train_expected_outputs, num_iteration=1)
-'''
+_, _, mean_squared_error, avg_weight, largest_weight, num_correct_predictions = rice_model_simulation.train(train_data_points, train_expected_outputs, num_iteration=200)
+
 ## Test the performance of the trained model on new data
 test_actual_outputs = rice_model_simulation.test(test_data_points)
 
@@ -101,4 +101,3 @@ axes[2].set_ylabel("Largest Weight")
 
 # Show both plots
 plt.show()
-'''
