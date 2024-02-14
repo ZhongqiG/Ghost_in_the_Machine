@@ -71,7 +71,7 @@ Selecting the Data Points
 '''
 
 # Convert to numpy array
-num_points = 1000
+num_points = 5
 
 # Select the first x points for training
 train_data_points = data_array[:num_points]
@@ -145,7 +145,7 @@ Train the data
 # train the simulation
 # if using old weights, do not train for new ones
 if not use_saved_weights:
-  trained_weights, trained_biases, mean_squared_error, max_output, num_correct_predictions = my_simulation.train(train_data_points, train_expected_outputs, num_iteration=300)
+  trained_weights, trained_biases, mean_squared_error, max_delta, num_correct_predictions = my_simulation.train(train_data_points, train_expected_outputs, num_iteration=300)
 
 # Save the trained weights to a file
 if not use_saved_weights:
@@ -211,11 +211,11 @@ if not use_saved_weights:
   axes[1].set_ylabel("Percent of\n Predictions Correct")
 
   # Plot the average weight value
-  axes[2].plot(max_output, "--")
-  axes[2].plot(max_output, "o", markersize=4)
+  axes[2].plot(max_delta, "--")
+  axes[2].plot(max_delta, "o", markersize=4)
   axes[2].set_xlabel("Epoch")
-  axes[2].set_ylabel("Maximum\n Output Value")
-  print("The maximum output value was", max(max_output))
+  axes[2].set_ylabel("Maximum\n Delta Value")
+  print("The maximum delta value was", max(max_delta))
 
   # Show both plots
   plt.show()

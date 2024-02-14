@@ -8,6 +8,7 @@ of data objects using the GIM architecture.
 
 # Import packages
 import numpy as np
+import sys
 
 class GIM_simulation:
     def __init__(self, activation_function="relu", weight_array=[], bias_array=[], alpha=0.1, learning_rate=0.1):
@@ -115,8 +116,8 @@ class GIM_simulation:
         # Create an archive of the mean squared error every epoch
         mse_archive = []
 
-        # Create an archieve of the maximum output
-        max_output = []
+        # Create an archieve of the maximum sum_delta
+        max_sum_delta_total = []
 
         # Create a dictionary to store if the prediction is correct
         prediction_accurate_for_epoch = {}
@@ -135,8 +136,8 @@ class GIM_simulation:
             # Create variable to store the number of correct predictions in this epoch
             num_correct_predictions = 0
 
-            # Store the maximum output for the data point
-            max_output_for_dp = 0
+            # Store the maximum delta for the data point
+            max_delta = 0
 
             # Run each piece of training data through the loop
             for idx in range(len(input_data_points)):
@@ -159,17 +160,13 @@ class GIM_simulation:
 
                     # Calculate the output after running the data through the layer
                     # Weights and biases are unchanged here
-                    [output, dummy_delta, dummy_weights, dummy_biases] = self.__array(layer_weights, layer_biases, next_layer_input, delta, self.learning_rate, self.activation_function, self.alpha, layer_weights.shape)
+                    [output, dummy_delta, dummy_weights, dummy_biases, dummy_max_delta_out] = self.__array(layer_weights, layer_biases, next_layer_input, delta, self.learning_rate, self.activation_function, self.alpha, layer_weights.shape)
 
                     # Save the output to an array of outputs
                     output_archive.append(output)
 
                     # Set the input for the layer after
                     next_layer_input = output
-
-                # Update max output
-                if np.max(output) > max_output_for_dp:
-                    max_output_for_dp = np.max(output)
 
                 # Find the correct delta value to input into the next layer
                 if self.activation_function == "sigmoid":
@@ -215,13 +212,17 @@ class GIM_simulation:
                 for layer_weights, layer_biases, outputs in zip(self.weights[::-1], self.biases[::-1], output_archive[:-1][::-1]):
 
                     # Calculate the weight and bias change based on the delta we calculated
-                    [dummy_output, delta, trained_weights, trained_biases] = self.__array(layer_weights, layer_biases, outputs, next_layer_delta, self.learning_rate, self.activation_function, self.alpha, layer_weights.shape)
+                    [dummy_output, delta, trained_weights, trained_biases, max_delta_out] = self.__array(layer_weights, layer_biases, outputs, next_layer_delta, self.learning_rate, self.activation_function, self.alpha, layer_weights.shape)
 
                     # Store the trained weights and bias data
                     trained_weights_archive.append(trained_weights)
                     trained_biases_archive.append(trained_biases)
 
                     next_layer_delta = delta
+
+                    # Update max delta
+                    if max_delta_out > max_delta:
+                        max_delta = max_delta_out
 
                 # Update the untrained weights to the trained weights for the next iteration
                 # The archives are reversed because the second pass was backwards
@@ -237,12 +238,12 @@ class GIM_simulation:
             mse_archive.append(mean_squred_error[0])
 
             # Save the maximum output
-            max_output.append(max_output_for_dp)
+            max_sum_delta_total.append(max_delta)
 
             # Save the number of correct predictions
             number_of_accurate_predictions_per_epoch.append(num_correct_predictions)
 
-        return self.weights, self.biases, mse_archive, max_output, number_of_accurate_predictions_per_epoch
+        return self.weights, self.biases, mse_archive, max_sum_delta_total, number_of_accurate_predictions_per_epoch
 
     def __weights_pe(self, delta_k, output_kmin1, partial_sum_out_k, partial_sum_delta_k, init_weight, eta):
         # Compute the calculated output and new weights
@@ -322,8 +323,10 @@ class GIM_simulation:
         # update the backpropagation outputs
         for c in range(array_size[1]):
             delta_kmin1[c] = self.__error_pe(output_kmin1[c], partial_delta_sum[c], model, alpha)
+        
+        max_delta_out = max(partial_delta_sum)
 
-        return [output_k, delta_kmin1, weight_changes, bias_changes]
+        return [output_k, delta_kmin1, weight_changes, bias_changes, max_delta_out]
 
     def check_parameter_dimensions(self):
 
