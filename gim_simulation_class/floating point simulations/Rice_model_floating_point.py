@@ -71,15 +71,15 @@ Selecting the Data Points
 '''
 
 # Convert to numpy array
-num_points = 600
+num_points = 5
 
 # Select the first x points for training
 train_data_points = data_array[:num_points]
 train_expected_outputs = expected_output_array[:num_points]
 
 # Select the next x points for testing
-test_data_points = data_array[num_points:num_points+300]
-test_expected_outputs = expected_output_array[num_points:num_points+300]
+test_data_points = data_array[num_points:num_points+100]
+test_expected_outputs = expected_output_array[num_points:num_points+100]
 
 # Analysis of training data
 num_ones = 0
@@ -94,20 +94,21 @@ print("There are ", num_ones, " ones in the testing data")
 print("There are ", num_zeros, " zeros in the testing data")
 
 
-
 '''
 Creating the Simulation
 '''
 
 # Create the simulation object
 my_simulation = GIM_simulation("relu")
-my_simulation.set_alpha(0.1)
-my_simulation.set_learning_rate(10**-4)
+my_simulation.set_alpha(0.01)
+my_simulation.set_learning_rate(10**-5)
 
 
 # Generate random weights
 if not use_saved_weights:
-  my_simulation.set_random_initial_condition([7,7,1], number_times_generated=1)
+  my_simulation.set_random_initial_condition([7,7,7,1], number_times_generated=1)
+  my_simulation.set_alpha(0.01)
+  my_simulation.set_learning_rate(10**-5)
 
 # Or used weights saved from a previous training
 # Retrieve the saved weights
@@ -144,7 +145,7 @@ Train the data
 # train the simulation
 # if using old weights, do not train for new ones
 if not use_saved_weights:
-  trained_weights, trained_biases, mean_squared_error, num_correct_predictions = my_simulation.train(train_data_points, train_expected_outputs, num_iteration=200)
+  trained_weights, trained_biases, mean_squared_error, max_delta, num_correct_predictions = my_simulation.train(train_data_points, train_expected_outputs, num_iteration=300)
 
 # Save the trained weights to a file
 if not use_saved_weights:
@@ -153,7 +154,7 @@ if not use_saved_weights:
     np.savetxt("saved_data/biases for layer "+str(idx+1), trained_biases[idx])
 
 # test the accuracy of the trained weights and biases
-actual_outputs = my_simulation.test(test_data_points)
+actual_outputs = my_simulation.test(train_data_points)
 
 # See how accuracte the ouptuts are when run on tested data
 correct_predictions = 0
@@ -163,7 +164,7 @@ num_zero_expected_outputs = 0
 
 if len(actual_outputs) != 0:
   for idx in range(len(actual_outputs)):
-    prediction = my_simulation.get_prediction([[actual_outputs[idx]]], 0.3)
+    prediction = my_simulation.get_prediction([[actual_outputs[idx]]], 0.5)
 
     if prediction == [[0]]:
       num_zero_predictions += 1
@@ -171,15 +172,15 @@ if len(actual_outputs) != 0:
     if actual_outputs[idx] == [[0]]:
       num_zero_actual_outputs += 1
 
-    if test_expected_outputs[idx] == [[0]]:
+    if train_expected_outputs[idx] == [[0]]:
       num_zero_expected_outputs += 1
 
     # Is the prediction is the same as the expected?
-    if prediction == test_expected_outputs[idx]:
+    if prediction == train_expected_outputs[idx]:
       correct_predictions += 1
 
-print("The percent of predictions correct for tested data is ", correct_predictions/len(test_data_points)*100, " %")
-print("Number if points that should have been zero: ", num_zero_expected_outputs, 
+print("The percent of predictions correct for tested data is ", correct_predictions/len(train_data_points)*100, " %")
+print("Number of points that should have been zero: ", num_zero_expected_outputs, 
       "\nNumber of points where the actual output was zero: ", num_zero_actual_outputs, 
       "\nNumber of points where the prediction was zero: ",num_zero_predictions)
 
@@ -192,13 +193,13 @@ Plotting
 
 # Plot the Mean Squared Error
 if not use_saved_weights:
-  fig, axes = plt.subplots(2, 1)
+  fig, axes = plt.subplots(3, 1)
 
   fig.suptitle('Changes in Mean Squared Error and \nthe Percent of Correct Predictions during Training')
 
   axes[0].plot(mean_squared_error, "--")
   axes[0].plot(mean_squared_error, "o", markersize=4)
-  axes[0].set_ylabel("Mean Squared Error")
+  axes[0].set_ylabel("Mean\n Squared Error")
   axes[0].set_ylim([0,0.5])
 
   # Plot the number of correct predictions during training
@@ -207,7 +208,15 @@ if not use_saved_weights:
   axes[1].plot(percent_correct_predictions, "--")
   axes[1].plot(percent_correct_predictions, "o", markersize=4)
   axes[1].set_xlabel("Epoch")
-  axes[1].set_ylabel("Percent of Predictions Correct")
+  axes[1].set_ylabel("Percent of\n Predictions Correct")
+
+  # Plot the average weight value
+  axes[2].plot(max_delta, "--")
+  axes[2].plot(max_delta, "o", markersize=4)
+  axes[2].set_xlabel("Epoch")
+  axes[2].set_ylabel("Maximum\n Delta Value")
+  print("The maximum delta value was", max(max_delta))
 
   # Show both plots
   plt.show()
+  
