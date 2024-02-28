@@ -12,6 +12,9 @@ Array model_array(fixed_16 weights[ARRAY_SIZE][ARRAY_SIZE],
     // initialize internal array with zeros
     fixed_16 partial_delta_sum[ARRAY_SIZE] = {};
 
+    // setting up an additional net array for softmax
+    SoftMax net;
+
     // iterate through the neurons in the layer
     int n = 0;
     for (n = 0; n < ARRAY_SIZE; n++) {
@@ -31,7 +34,15 @@ Array model_array(fixed_16 weights[ARRAY_SIZE][ARRAY_SIZE],
         // get the output for the current neuron in the layer
         Bias bias_out = bias_pe(delta_k[n], partial_output_sum, biases[n], eta, training);
         return_array.bias_change[n] = bias_out.bias_change;
-        return_array.output_k[n] = act_pe(bias_out.net_sum, model, alpha);
+        net.out_vector[n] = bias_out.net_sum;
+        if (model != 'm')
+            return_array.output_k[n] = act_pe(net.out_vector[n], model, alpha);
+    }
+    if (model == 'm')
+        SoftMax prediction_vector = softmax(net);
+
+    for (int m; m < ARRAY_SIZE; m++) {
+        return_array.output_k[m] = prediction_vector.out_vector[n];
     }
     // get the delta signal for the previous layer using the error pe
     int j = 0;

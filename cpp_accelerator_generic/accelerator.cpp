@@ -17,8 +17,8 @@ Inference accelerator(fixed_16 w1[ARRAY_SIZE][ARRAY_SIZE], fixed_16 w2[ARRAY_SIZ
                         {0, 1, 0, 1}};
     fixed_16 y[4] = {0, 1, 1, 0};
 
-    // initializing data for generic array testing
-    // fixed_16 x;
+    // this is used for softmax
+    fixed_16 train_labels_one_hot[];
 
     // setting up initial values for signals between layers
     fixed_16 output_kmin1[ARRAY_SIZE] = {};
@@ -61,7 +61,8 @@ Inference accelerator(fixed_16 w1[ARRAY_SIZE][ARRAY_SIZE], fixed_16 w2[ARRAY_SIZ
     // number of iterations defined in the header file
 
     // store actual and predicted difference in vector, set other params
-    char model = 'r'; // s = sigmoid, r = relu, l = leaky relu NOTE: SIGMOID CANNOT BE USED ON HARDWARE
+    char model1 = 'r'; // s = sigmoid, r = relu, l = leaky relu NOTE: SIGMOID CANNOT BE USED ON HARDWARE
+    char model2 = 'm'; // model used for the second layer, currently set to softmax for MNIST data
     fixed_16 alpha = 0.1; // for leaky relu
     fixed_16 lr = 0.1; // learning rate
 
@@ -84,28 +85,31 @@ Inference accelerator(fixed_16 w1[ARRAY_SIZE][ARRAY_SIZE], fixed_16 w2[ARRAY_SIZ
 
             // run the forward propagation
             // start with layer 1
-            Array array_out1 = model_array(w1_local, bias_1_local, output_0, delta_1, lr, model, alpha, training);
+            Array array_out1 = model_array(w1_local, bias_1_local, output_0, delta_1, lr, model1, alpha, training);
             int o;
             for (o = 0; o < ARRAY_SIZE; o++){
                 output_1[o] = array_out1.output_k[o];
             }
 
             // then layer two
-            Array array_out2 = model_array(w2_local, bias_2_local, output_1, delta_2, lr, model, alpha, training);
+            Array array_out2 = model_array(w2_local, bias_2_local, output_1, delta_2, lr, model2, alpha, training);
             for (o = 0; o < ARRAY_SIZE; o++){
                 output_2[o] = array_out2.output_k[o];
             }
 
             // make inferences for the return array if training has completed
-            // this part is hard to generalize depending on the dataset. some 
-            // will need us to run softmax which isn't implemented here (and 
-            // probably should take place on the ARM core due to the math)
+            // this part is hard to generalize depending on the dataset.
             if (output_2[0] > 0.5) {
                 output_inference[j] = 1;
             }
             else if (output_2[0] <= 0.5) {
                 output_inference[j] = 0;
             }
+
+            // uncomment the following for softmax
+            // complete the inference (please check this comes from ChatGPT)
+            // fixed_16 max_element = std::max_element(array_out2.output_k[0], array_out1.output_k[ARRAY_SIZE]);
+            // output_inference[j] = std::distance(array_out2.output_k, max_element);
             
             // lastly calculate the final error with the derivative of mse after the last output
             // if (model == 's') {
@@ -113,17 +117,21 @@ Inference accelerator(fixed_16 w1[ARRAY_SIZE][ARRAY_SIZE], fixed_16 w2[ARRAY_SIZ
             // }
             int e;
             for (e = 0; e < ARRAY_SIZE; e++) {
-                if (model == 'r') {
+                if (model2 == 'r') {
                     if (output_2[e] > 0)
                         delta_2[e] = -(y[j] - output_2[e]);
                     else
                         delta_2[e] = 0;
                     }
-                else if (model == 'l') {
+                else if (model2 == 'l') {
                     if (output_2[e] > 0)
                         delta_2[e] = -(y[j] - output_2[e]);
                     else
                         delta_2[e] = -(y[j] - output_2[e]) * alpha;
+                }
+                else if (model2 == 'm') {
+                    // find the error signal if the model of the output layer is softmax
+                    delta_2[p] = array_out2.output_k[p] - train_labels_one_hot[j][p];
                 }
                 else {
                     // std::cout << "model invalid" << std::endl;
@@ -133,7 +141,7 @@ Inference accelerator(fixed_16 w1[ARRAY_SIZE][ARRAY_SIZE], fixed_16 w2[ARRAY_SIZ
 
             // run the backpropagation and update the array
             // start with layer 2
-            Array array_back2 = model_array(w2_local, bias_2_local, output_1, delta_2, lr, model, alpha, training);
+            Array array_back2 = model_array(w2_local, bias_2_local, output_1, delta_2, lr, model2, alpha, training);
             for (e = 0; e < ARRAY_SIZE; e++) {
                 delta_1[e] = array_back2.delta_kmin1[e];
             }
@@ -145,7 +153,7 @@ Inference accelerator(fixed_16 w1[ARRAY_SIZE][ARRAY_SIZE], fixed_16 w2[ARRAY_SIZ
                 }
             }
             // end with layer 1
-            Array array_back1 = model_array(w1_local, bias_1_local, output_0, delta_1, lr, model, alpha, training);
+            Array array_back1 = model_array(w1_local, bias_1_local, output_0, delta_1, lr, model1, alpha, training);
             // update the weights and biases
             for (int n = 0; n < ARRAY_SIZE; n++) {
                 bias_1_local[n] = array_back1.bias_change[n];

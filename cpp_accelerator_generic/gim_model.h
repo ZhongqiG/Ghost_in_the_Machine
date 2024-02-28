@@ -56,6 +56,13 @@ struct Inference {
 	Inference(){}
 };
 
+struct SoftMax {
+	//members
+	fixed_16 out_vector[ARRAY_SIZE];
+	// constructor
+	SoftMax(){}
+}
+
 // processing elements, array, and accelerator function prototypes
 Weight weights_pe(fixed_16 delta_k, fixed_16 output_kmin1, fixed_16 partial_sum_out_k,
 				fixed_16 partial_sum_delta_k, fixed_16 init_weight,
@@ -68,6 +75,8 @@ Bias bias_pe(fixed_16 delta_k,
 				fixed_16 training);
 
 fixed_16 act_pe(fixed_16 net_in, char model, fixed_16 alpha);
+
+SoftMax softmax(SoftMax output_array); 
 
 fixed_16 error_pe(fixed_16 output_kmin1, fixed_16 partial_sum_delta_k,
 				char model, fixed_16 alpha);
