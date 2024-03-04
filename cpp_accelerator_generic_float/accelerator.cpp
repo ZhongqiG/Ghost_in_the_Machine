@@ -18,7 +18,7 @@ Inference accelerator(float w1[ARRAY_SIZE][ARRAY_SIZE], float w2[ARRAY_SIZE][ARR
     float y[4] = {0, 1, 1, 0};
 
     // this is used for softmax
-    float train_labels_one_hot[];
+    // float train_labels_one_hot[];
 
     // setting up initial values for signals between layers
     float output_kmin1[ARRAY_SIZE] = {};
@@ -62,7 +62,7 @@ Inference accelerator(float w1[ARRAY_SIZE][ARRAY_SIZE], float w2[ARRAY_SIZE][ARR
 
     // store actual and predicted difference in vector, set other params
     char model1 = 'r'; // s = sigmoid, r = relu, l = leaky relu NOTE: SIGMOID CANNOT BE USED ON HARDWARE
-    char model2 = 'm'; // model used for the second layer, currently set to softmax for MNIST data
+    char model2 = 'r'; // model used for the second layer, currently set to softmax for MNIST data
     float alpha = 0.1; // for leaky relu
     float lr = 0.1; // learning rate
 
@@ -131,7 +131,7 @@ Inference accelerator(float w1[ARRAY_SIZE][ARRAY_SIZE], float w2[ARRAY_SIZE][ARR
                 }
                 else if (model2 == 'm') {
                     // find the error signal if the model of the output layer is softmax
-                    delta_2[p] = array_out2.output_k[p] - train_labels_one_hot[j][p];
+                    // delta_2[p] = array_out2.output_k[p] - train_labels_one_hot[j][p];
                 }
                 else {
                     // std::cout << "model invalid" << std::endl;

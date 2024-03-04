@@ -38,12 +38,12 @@ Array model_array(float weights[ARRAY_SIZE][ARRAY_SIZE],
         if (model != 'm')
             return_array.output_k[n] = act_pe(net.out_vector[n], model, alpha);
     }
-    if (model == 'm')
-        SoftMax prediction_vector = softmax(net);
+    // if (model == 'm')
+    //     SoftMax prediction_vector = softmax(net);
 
-    for (int m; m < ARRAY_SIZE; m++) {
-        return_array.output_k[m] = prediction_vector.out_vector[n];
-    }
+    // for (int m; m < ARRAY_SIZE; m++) {
+    //     return_array.output_k[m] = prediction_vector.out_vector[n];
+    // }
     // get the delta signal for the previous layer using the error pe
     int j = 0;
     for (j = 0; j < ARRAY_SIZE; j++) {

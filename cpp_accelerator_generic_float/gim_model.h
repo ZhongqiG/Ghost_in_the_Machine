@@ -58,7 +58,7 @@ struct Inference {
 
 struct SoftMax {
 	//members
-	float out_vector[ARRAY_SIZE];
+	float out_vector[DATA_SIZE];
 	// constructor
 	SoftMax(){}
 };
