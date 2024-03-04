@@ -61,7 +61,7 @@ struct SoftMax {
 	fixed_16 out_vector[ARRAY_SIZE];
 	// constructor
 	SoftMax(){}
-}
+};
 
 // processing elements, array, and accelerator function prototypes
 Weight weights_pe(fixed_16 delta_k, fixed_16 output_kmin1, fixed_16 partial_sum_out_k,
