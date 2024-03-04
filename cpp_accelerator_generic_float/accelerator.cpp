@@ -4,51 +4,51 @@
 using namespace std;
 
 // now, we actually run the full model
-Inference accelerator(fixed_16 w1[ARRAY_SIZE][ARRAY_SIZE], fixed_16 w2[ARRAY_SIZE][ARRAY_SIZE],
-				fixed_16  bias_1[ARRAY_SIZE], fixed_16 bias_2[ARRAY_SIZE], fixed_16 output_inference[DATA_SIZE],
-                fixed_16 training) {
+Inference accelerator(float w1[ARRAY_SIZE][ARRAY_SIZE], float w2[ARRAY_SIZE][ARRAY_SIZE],
+				float  bias_1[ARRAY_SIZE], float bias_2[ARRAY_SIZE], float output_inference[DATA_SIZE],
+                float training) {
 
     // array for the final output
     Inference output_array;
 
     // initializing the data for the XOR problem
     // this is where some work could be done to input larger datasets
-    fixed_16 data[2][4] = {{0, 0, 1, 1},
+    float data[2][4] = {{0, 0, 1, 1},
                         {0, 1, 0, 1}};
-    fixed_16 y[4] = {0, 1, 1, 0};
+    float y[4] = {0, 1, 1, 0};
 
     // this is used for softmax
-    fixed_16 train_labels_one_hot[];
+    float train_labels_one_hot[];
 
     // setting up initial values for signals between layers
-    fixed_16 output_kmin1[ARRAY_SIZE] = {};
+    float output_kmin1[ARRAY_SIZE] = {};
 
     // initializing internal arrays with zeros
-    fixed_16 delta_2[ARRAY_SIZE] = {};
-    fixed_16 output_back1[ARRAY_SIZE] = {};
-    fixed_16 delta_1[ARRAY_SIZE] = {};
-    fixed_16 weight_changes_2[ARRAY_SIZE][ARRAY_SIZE] = {};
-    fixed_16 bias_2_update[ARRAY_SIZE] = {};
+    float delta_2[ARRAY_SIZE] = {};
+    float output_back1[ARRAY_SIZE] = {};
+    float delta_1[ARRAY_SIZE] = {};
+    float weight_changes_2[ARRAY_SIZE][ARRAY_SIZE] = {};
+    float bias_2_update[ARRAY_SIZE] = {};
 
-    fixed_16 output_back2[ARRAY_SIZE] = {};
-    fixed_16 delta_0[ARRAY_SIZE] = {};
-    fixed_16 weight_changes_1[ARRAY_SIZE][ARRAY_SIZE] = {};
-    fixed_16 bias_1_update[ARRAY_SIZE] = {};
+    float output_back2[ARRAY_SIZE] = {};
+    float delta_0[ARRAY_SIZE] = {};
+    float weight_changes_1[ARRAY_SIZE][ARRAY_SIZE] = {};
+    float bias_1_update[ARRAY_SIZE] = {};
 
-    fixed_16 output_0[ARRAY_SIZE] = {};
-    fixed_16 output_1[ARRAY_SIZE] = {};
-    fixed_16 output_2[ARRAY_SIZE] = {};
+    float output_0[ARRAY_SIZE] = {};
+    float output_1[ARRAY_SIZE] = {};
+    float output_2[ARRAY_SIZE] = {};
 
     // dummy arrays used to capture unused outputs
-    fixed_16 dummy1[ARRAY_SIZE];
-    fixed_16 dummy2[ARRAY_SIZE][ARRAY_SIZE];
-    fixed_16 dummy3[ARRAY_SIZE];
+    float dummy1[ARRAY_SIZE];
+    float dummy2[ARRAY_SIZE][ARRAY_SIZE];
+    float dummy3[ARRAY_SIZE];
 
     // make local versions of the weights/biases
-    fixed_16 w1_local[ARRAY_SIZE][ARRAY_SIZE] = {};
-    fixed_16 w2_local[ARRAY_SIZE][ARRAY_SIZE] = {};
-    fixed_16 bias_1_local[ARRAY_SIZE] = {};
-    fixed_16 bias_2_local[ARRAY_SIZE] = {};
+    float w1_local[ARRAY_SIZE][ARRAY_SIZE] = {};
+    float w2_local[ARRAY_SIZE][ARRAY_SIZE] = {};
+    float bias_1_local[ARRAY_SIZE] = {};
+    float bias_2_local[ARRAY_SIZE] = {};
     for (int n = 0; n < ARRAY_SIZE; n++) {
         bias_1_local[n] = bias_1[n];
         bias_2_local[n] = bias_2[n];
@@ -63,8 +63,8 @@ Inference accelerator(fixed_16 w1[ARRAY_SIZE][ARRAY_SIZE], fixed_16 w2[ARRAY_SIZ
     // store actual and predicted difference in vector, set other params
     char model1 = 'r'; // s = sigmoid, r = relu, l = leaky relu NOTE: SIGMOID CANNOT BE USED ON HARDWARE
     char model2 = 'm'; // model used for the second layer, currently set to softmax for MNIST data
-    fixed_16 alpha = 0.1; // for leaky relu
-    fixed_16 lr = 0.1; // learning rate
+    float alpha = 0.1; // for leaky relu
+    float lr = 0.1; // learning rate
 
     // iterate through the alloted epochs
     int i;
@@ -108,7 +108,7 @@ Inference accelerator(fixed_16 w1[ARRAY_SIZE][ARRAY_SIZE], fixed_16 w2[ARRAY_SIZ
 
             // uncomment the following for softmax
             // complete the inference (please check this comes from ChatGPT)
-            // fixed_16 max_element = std::max_element(array_out2.output_k[0], array_out1.output_k[ARRAY_SIZE]);
+            // float max_element = std::max_element(array_out2.output_k[0], array_out1.output_k[ARRAY_SIZE]);
             // output_inference[j] = std::distance(array_out2.output_k, max_element);
             
             // lastly calculate the final error with the derivative of mse after the last output

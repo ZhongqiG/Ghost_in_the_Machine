@@ -1,16 +1,16 @@
 #include "gim_model.h"
 using namespace std;
 
-Array model_array(fixed_16 weights[ARRAY_SIZE][ARRAY_SIZE],
-			fixed_16 biases[ARRAY_SIZE],
-			fixed_16 output_kmin1[ARRAY_SIZE],
-			fixed_16 delta_k[ARRAY_SIZE], fixed_16 eta,
-			char model, fixed_16 alpha, fixed_16 training) {
+Array model_array(float weights[ARRAY_SIZE][ARRAY_SIZE],
+			float biases[ARRAY_SIZE],
+			float output_kmin1[ARRAY_SIZE],
+			float delta_k[ARRAY_SIZE], float eta,
+			char model, float alpha, float training) {
 
     Array return_array;
     
     // initialize internal array with zeros
-    fixed_16 partial_delta_sum[ARRAY_SIZE] = {};
+    float partial_delta_sum[ARRAY_SIZE] = {};
 
     // setting up an additional net array for softmax
     SoftMax net;
@@ -19,7 +19,7 @@ Array model_array(fixed_16 weights[ARRAY_SIZE][ARRAY_SIZE],
     int n = 0;
     for (n = 0; n < ARRAY_SIZE; n++) {
         // initialize the running output sum
-        fixed_16 partial_output_sum = 0;
+        float partial_output_sum = 0;
         int c = 0;
         // iterate through the columns of the current layer
         for (c = 0; c < ARRAY_SIZE; c++) {
