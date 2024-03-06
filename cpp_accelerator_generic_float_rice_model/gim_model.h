@@ -11,7 +11,7 @@
 #define ARRAY_SIZE 7
 #define DATA_SIZE 200 // change this number to match the number of data points
 #define FEATURES 7 // change this number to match the dimension of the data points
-#define NUM_ITERATIONS 10000
+#define NUM_ITERATIONS 20
 
 // typedef ap_fixed<16,7> float;
 using namespace std;
@@ -97,7 +97,7 @@ Array model_array(float weights[ARRAY_SIZE][ARRAY_SIZE],
 			char model, float alpha, float training);
 
 Inference accelerator(float w1[ARRAY_SIZE][ARRAY_SIZE], float w2[ARRAY_SIZE][ARRAY_SIZE],
-				 float  bias_1[ARRAY_SIZE], float bias_2[ARRAY_SIZE], float output_inference[DATA_SIZE],
-                 float training);
+				 float bias_1[ARRAY_SIZE], float bias_2[ARRAY_SIZE], float output_inference[DATA_SIZE], float input_data[DATA_SIZE][FEATURES],
+                 float input_labels[DATA_SIZE], float training);
 
 #endif // GIM_MODEL_

@@ -5,8 +5,8 @@ using namespace std;
 
 // now, we actually run the full model
 Inference accelerator(float w1[ARRAY_SIZE][ARRAY_SIZE], float w2[ARRAY_SIZE][ARRAY_SIZE],
-				float  bias_1[ARRAY_SIZE], float bias_2[ARRAY_SIZE], float output_inference[DATA_SIZE], Data input_data,
-                float training) {
+				float  bias_1[ARRAY_SIZE], float bias_2[ARRAY_SIZE], float output_inference[DATA_SIZE], float input_data[DATA_SIZE][FEATURES],
+                float input_labels[DATA_SIZE], float training) {
 
     // array for the final output
     Inference output_array;
@@ -18,8 +18,6 @@ Inference accelerator(float w1[ARRAY_SIZE][ARRAY_SIZE], float w2[ARRAY_SIZE][ARR
     // float y[4] = {0, 1, 1, 0};
 
     // initialize data here for the rice model using Zhongqi's code
-    float data[DATA_SIZE][7] = intput_data.data;
-    float y[DATA_SIZE] = input_data.labels;
 
     // this is used for softmax
     // float train_labels_one_hot[];
@@ -81,7 +79,7 @@ Inference accelerator(float w1[ARRAY_SIZE][ARRAY_SIZE], float w2[ARRAY_SIZE][ARR
             int p;
             for (p = 0; p < ARRAY_SIZE; p++) {
                 // setup the initial data input
-                output_0[p] = data[p][j];
+                output_0[p] = input_data[j][p];
                 // initialize the error backpropagation
                 delta_1[p] = 0;
                 delta_2[p] = 0;
@@ -123,15 +121,15 @@ Inference accelerator(float w1[ARRAY_SIZE][ARRAY_SIZE], float w2[ARRAY_SIZE][ARR
             for (e = 0; e < ARRAY_SIZE; e++) {
                 if (model2 == 'r') {
                     if (output_2[e] > 0)
-                        delta_2[e] = -(y[j] - output_2[e]);
+                        delta_2[e] = -(input_labels[j] - output_2[e]);
                     else
                         delta_2[e] = 0;
                     }
                 else if (model2 == 'l') {
                     if (output_2[e] > 0)
-                        delta_2[e] = -(y[j] - output_2[e]);
+                        delta_2[e] = -(input_labels[j] - output_2[e]);
                     else
-                        delta_2[e] = -(y[j] - output_2[e]) * alpha;
+                        delta_2[e] = -(input_labels[j] - output_2[e]) * alpha;
                 }
                 else if (model2 == 'm') {
                     // find the error signal if the model of the output layer is softmax
