@@ -5,7 +5,7 @@ using namespace std;
 
 // now, we actually run the full model
 Inference accelerator(float w1[ARRAY_SIZE][ARRAY_SIZE], float w2[ARRAY_SIZE][ARRAY_SIZE],
-				float  bias_1[ARRAY_SIZE], float bias_2[ARRAY_SIZE], float output_inference[DATA_SIZE],
+				float  bias_1[ARRAY_SIZE], float bias_2[ARRAY_SIZE], float output_inference[DATA_SIZE], Data input_data,
                 float training) {
 
     // array for the final output
@@ -18,14 +18,8 @@ Inference accelerator(float w1[ARRAY_SIZE][ARRAY_SIZE], float w2[ARRAY_SIZE][ARR
     // float y[4] = {0, 1, 1, 0};
 
     // initialize data here for the rice model using Zhongqi's code
-    float data[DATA_SIZE][7];
-    float y[DATA_SIZE];
-
-    if (training == 1) {
-        // assign training data here
-    }
-    else
-        // assign test data here
+    float data[DATA_SIZE][7] = intput_data.data;
+    float y[DATA_SIZE] = input_data.labels;
 
     // this is used for softmax
     // float train_labels_one_hot[];

@@ -10,7 +10,7 @@
 
 #define ARRAY_SIZE 7
 #define DATA_SIZE 200 // change this number to match the number of data points
-#define TEST_DATA_SIZE 200
+#define FEATURES 7 // change this number to match the dimension of the data points
 #define NUM_ITERATIONS 10000
 
 // typedef ap_fixed<16,7> float;
@@ -62,6 +62,14 @@ struct SoftMax {
 	float out_vector[ARRAY_SIZE];
 	// constructor
 	SoftMax(){}
+};
+
+struct Data {
+	// members
+	float data[DATA_SIZE][FEATURES];
+	float labels[DATA_SIZE];
+	// constructor
+	Data(){}
 };
 
 // processing elements, array, and accelerator function prototypes
